@@ -1,5 +1,5 @@
 // Sacred Prayer service worker: keeps the app working offline after the first visit.
-const VERSION = "sp-v1";
+const VERSION = "sp-v2";
 const SHELL = [
   "./",
   "./index.html",
