@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "Sacred Prayer",
+  "short_name": "Sacred Prayer",
+  "description": "The Lost Prayer of Solomon, the Manuscript of Solomon and prayers for everyday life.",
+  "lang": "en",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#172C6B",
+  "theme_color": "#172C6B",
+  "categories": ["lifestyle", "books"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

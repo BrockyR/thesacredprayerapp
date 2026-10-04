@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sacred Prayer</title>
+<meta name="description" content="The Lost Prayer of Solomon, the Manuscript of Solomon and prayers for everyday life.">
+<meta name="theme-color" content="#EDF0F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B111E" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sacred Prayer">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one phone-width app column, lapis header panel, bottom tab bar; reading views use a parchment-free serif page with gold liturgical rubrics */
+:root{
+  --bg:#EDF0F5; --surface:#FFFFFF; --ink:#16203A; --muted:#58637D; --line:#D7DDE8;
+  --lapis:#22409A; --lapis-deep:#172C6B; --lapis-soft:#E2E8F7; --gold:#A0731A; --gold-bright:#D8AA4A; --gold-soft:#F4EAD0;
+  --on-lapis:#F4F1E8; --good:#2F7A4E;
+  --display:"Marcellus","Trajan Pro",Georgia,serif;
+  --read:"Literata",Georgia,"Times New Roman",serif;
+  --ui:"Figtree","Segoe UI",system-ui,sans-serif;
+  --fs:1;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B111E; --surface:#131B2D; --ink:#E8EBF2; --muted:#9BA5BD; --line:#253049;
+  --lapis:#8EA6EE; --lapis-deep:#1A2754; --lapis-soft:#1A2441; --gold:#DDB35E; --gold-bright:#E8C273; --gold-soft:#2C2616;
+  --on-lapis:#F1ECDD; --good:#6CC08F; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0B111E; --surface:#131B2D; --ink:#E8EBF2; --muted:#9BA5BD; --line:#253049;
+  --lapis:#8EA6EE; --lapis-deep:#1A2754; --lapis-soft:#1A2441; --gold:#DDB35E; --gold-bright:#E8C273; --gold-soft:#2C2616;
+  --on-lapis:#F1ECDD; --good:#6CC08F; color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img,svg{max-width:100%}
+html{-webkit-text-size-adjust:100%}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 calc(88px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;letter-spacing:.01em}
+.eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding-block:14px 10px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:1.25rem}
+.seal{width:30px;height:30px;flex:none}
+.tools{display:flex;gap:6px}
+.chip-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 11px;font-size:.85rem;font-weight:600}
+
+/* hero panel */
+.hero{background:var(--lapis-deep);color:var(--on-lapis);border-radius:20px;padding:22px 20px 20px;display:grid;gap:14px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto -40px -60px auto;width:200px;height:200px;border-radius:50%;border:1px solid rgba(216,170,74,.25);box-shadow:0 0 0 18px rgba(216,170,74,.06),0 0 0 40px rgba(216,170,74,.04)}
+.hero .eyebrow{color:var(--gold-bright)}
+.hero h1{font-size:1.75rem;line-height:1.15}
+.hero p{margin:0;opacity:.88;max-width:40ch}
+.lamps{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.lamp{display:grid;justify-items:center;gap:4px;font-size:.7rem;font-variant-numeric:tabular-nums;opacity:.9}
+.flame{width:14px;height:14px;border-radius:50% 0 50% 50%;transform:rotate(-45deg);border:1.5px solid rgba(241,236,221,.45);margin-top:4px}
+.lamp.lit .flame{background:var(--gold-bright);border-color:var(--gold-bright);box-shadow:0 0 12px rgba(232,194,115,.7)}
+.lamp.today .flame{border-color:var(--gold-bright);border-style:dashed}
+.cta{justify-self:start;background:var(--gold-bright);color:#1B1606;border:0;border-radius:12px;padding:12px 18px;font-weight:700;font-size:1rem}
+
+section.block{display:grid;gap:12px;margin-top:26px}
+.block-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.block-head h2{font-size:1.3rem}
+.link{background:none;border:0;color:var(--lapis);font-weight:600;padding:0}
+
+.pillars{display:grid;gap:10px}
+.pillar{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.numeral{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:1.15rem;color:var(--gold);border:1.5px solid var(--gold);background:var(--gold-soft)}
+.pillar strong{display:block;font-size:1.02rem}
+.pillar span{color:var(--muted);font-size:.88rem}
+.chev{color:var(--muted);font-size:1.3rem}
+
+.bonus-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bonus-tile{background:var(--lapis-soft);border:0;border-radius:14px;padding:12px 10px;text-align:left;display:grid;gap:4px;min-width:0}
+.bonus-tile b{font-size:.9rem;line-height:1.2}
+.bonus-tile small{color:var(--muted);font-size:.75rem}
+
+/* lists */
+.list{display:grid;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;text-align:left;padding:14px;background:none;border:0;border-top:1px solid var(--line);width:100%}
+.row:first-child{border-top:0}
+.row .idx{font-family:var(--display);color:var(--gold);min-width:1.6em;font-variant-numeric:tabular-nums}
+.row strong{display:block;font-weight:600}
+.row span{color:var(--muted);font-size:.86rem}
+.state{font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.state.done{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.state.next{background:var(--gold-soft);color:var(--gold)}
+.fav-mark{color:var(--gold)}
+
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.tabs button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600;font-size:.9rem}
+.tabs button[aria-pressed="true"]{background:var(--lapis);border-color:var(--lapis);color:var(--surface)}
+.note{background:var(--gold-soft);border-radius:12px;padding:12px 14px;font-size:.88rem;color:var(--ink)}
+.intro{color:var(--muted);margin:0;max-width:60ch}
+.page-title{display:grid;gap:6px;margin-top:6px}
+.page-title h1{font-size:1.7rem}
+
+/* reader */
+.reader{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;padding-top:env(safe-area-inset-top,0px)}
+.reader-inner{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 120px}
+.reader-bar{position:sticky;top:0;background:var(--bg);display:flex;justify-content:space-between;align-items:center;padding-block:12px;gap:8px;z-index:2}
+.reader h1{font-size:calc(1.75rem * var(--fs));line-height:1.2;margin-top:8px}
+.verse{margin:18px 0 6px;padding:14px 16px;border-left:3px solid var(--gold);background:var(--surface);border-radius:0 12px 12px 0;font-family:var(--read);font-style:italic;font-size:calc(1rem * var(--fs))}
+.verse cite{display:block;margin-top:6px;font-style:normal;font-family:var(--ui);font-size:.8rem;font-weight:600;color:var(--gold);letter-spacing:.04em}
+.text{font-family:var(--read);font-size:calc(1.12rem * var(--fs));line-height:1.75;max-width:62ch}
+.text p{margin:0 0 1em}
+.text .rubric{font-family:var(--ui);font-style:italic;color:var(--gold);font-size:.92em}
+.text .petition{padding-left:14px;border-left:2px solid var(--lapis)}
+.text h3{font-size:1.15em;margin:1.4em 0 .4em;color:var(--lapis)}
+.text ul,.text ol{padding-left:1.2em;margin:0 0 1em}
+.amen{font-family:var(--display);font-size:1.3em;color:var(--gold)}
+.actions{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.actions-inner{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.btn{flex:1;border-radius:12px;padding:12px 14px;font-weight:700;border:1.5px solid var(--lapis);background:transparent;color:var(--lapis)}
+.btn.primary{background:var(--lapis);color:var(--surface)}
+.btn.done{border-color:var(--good);background:transparent;color:var(--good)}
+
+/* bottom nav */
+nav.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav.bar .inner{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.bar button{background:none;border:0;display:grid;justify-items:center;gap:2px;padding:6px 0;font-size:.7rem;font-weight:600;color:var(--muted)}
+nav.bar svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+nav.bar button[aria-current="page"]{color:var(--lapis)}
+
+/* install card + guide */
+.install{display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:center;background:var(--surface);border:1.5px solid var(--gold);border-radius:16px;padding:14px;margin-top:14px}
+.install img{width:52px;height:52px;border-radius:12px}
+.install strong{display:block;font-size:1rem}
+.install span{color:var(--muted);font-size:.86rem}
+.install .btn{grid-column:1/-1}
+.chip-btn.gold{border-color:var(--gold);color:var(--gold)}
+.guide{display:grid;gap:16px;margin-top:8px}
+.guide h1{font-size:1.6rem}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--lapis-soft);border-radius:12px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:9px;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--lapis);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:st}
+.steps li{counter-increment:st;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;font-size:1rem;line-height:1.45}
+.steps li::before{content:counter(st);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--lapis);color:var(--surface);font-weight:700;font-variant-numeric:tabular-nums}
+.steps b{font-weight:700}
+.steps small{display:block;color:var(--muted);font-size:.85rem;margin-top:4px}
+.ico{display:inline-grid;place-items:center;vertical-align:-6px;width:26px;height:26px;border:1px solid var(--line);border-radius:7px;background:var(--bg);margin-inline:2px}
+.ico svg{width:17px;height:17px;stroke:var(--lapis);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ico svg .dot{fill:var(--lapis);stroke:none}
+.alert{background:color-mix(in srgb,#C0392B 12%,var(--surface));border:1px solid color-mix(in srgb,#C0392B 40%,transparent);border-radius:12px;padding:12px 14px;font-size:.92rem}
+.copybox{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 8px 8px 12px}
+.copybox code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:.85rem}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:.9rem;z-index:40}
+
+/* song player */
+.player{background:var(--lapis-deep);color:var(--on-lapis);border-radius:20px;padding:22px;display:grid;gap:16px;justify-items:center;text-align:center}
+.disc{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,var(--gold-bright) 0 7%,transparent 8%),repeating-radial-gradient(circle,rgba(232,194,115,.22) 0 2px,transparent 2px 9px);border:1px solid rgba(232,194,115,.4)}
+.playing .disc{animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.play{width:64px;height:64px;border-radius:50%;border:0;background:var(--gold-bright);color:#1B1606;font-size:1.4rem;font-weight:700}
+.track{width:100%;height:4px;background:rgba(241,236,221,.2);border-radius:4px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--gold-bright)}
+.times{width:100%;display:flex;justify-content:space-between;font-size:.8rem;font-variant-numeric:tabular-nums;opacity:.8}
+.species{display:flex;flex-wrap:wrap;gap:6px}
+.species span{background:var(--gold-soft);color:var(--gold);border-radius:999px;padding:4px 10px;font-size:.8rem;font-weight:600}
+.cover{background:var(--lapis-deep);color:var(--on-lapis);border-radius:16px;padding:26px 20px;text-align:center;display:grid;gap:8px;border:1px solid var(--gold-bright)}
+.cover .eyebrow{color:var(--gold-bright)}
+.cover h2{font-size:1.6rem}
+@media (prefers-reduced-motion:reduce){.playing .disc{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg class="seal" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="none" stroke="var(--gold)" stroke-width="1.5"/><path d="M16 5 25.5 21.5h-19Z M16 27 6.5 10.5h19Z" fill="none" stroke="var(--gold)" stroke-width="1.3"/></svg>
+      Sacred Prayer
+    </div>
+    <div class="tools">
+      <button class="chip-btn gold" id="hdr-install" data-install hidden>Install</button>
+      <button class="chip-btn" id="fs-down" aria-label="Smaller text">A−</button>
+      <button class="chip-btn" id="fs-up" aria-label="Larger text">A+</button>
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+
+<nav class="bar" aria-label="Main">
+  <div class="inner">
+    <button data-tab="home"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7v9h-6v-6H9v6H3z"/></svg>Home</button>
+    <button data-tab="lost"><svg viewBox="0 0 24 24"><path d="M12 3c2 3 4 4.5 4 7.5a4 4 0 0 1-8 0C8 7.5 10 6 12 3z"/><path d="M8 21h8M12 14.5V21"/></svg>7 Days</button>
+    <button data-tab="manuscript"><svg viewBox="0 0 24 24"><path d="M6 3h10a2 2 0 0 1 2 2v14a2 2 0 0 0 2 2H8a2 2 0 0 1-2-2z"/><path d="M6 7H4v12a2 2 0 0 0 2 2M10 8h5M10 12h5"/></svg>Manuscript</button>
+    <button data-tab="prayers"><svg viewBox="0 0 24 24"><path d="M12 20V9M12 9c-2-3-6-3-8-2v11c2-1 6-1 8 2 2-3 6-3 8-2V7c-2-1-6-1-8 2z"/></svg>Prayers</button>
+    <button data-tab="bonus"><svg viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13M12 7C10 3 6 4 7.5 7M12 7c2-4 6-3 4.5 0"/></svg>Gifts</button>
+  </div>
+</nav>
+
+<div class="reader" id="reader" hidden>
+  <div class="reader-inner">
+    <div class="reader-bar">
+      <button class="chip-btn" id="reader-back">← Back</button>
+      <div class="tools">
+        <button class="chip-btn" id="r-fs-down" aria-label="Smaller text">A−</button>
+        <button class="chip-btn" id="r-fs-up" aria-label="Larger text">A+</button>
+      </div>
+    </div>
+    <article id="reader-body"></article>
+  </div>
+  <div class="actions"><div class="actions-inner" id="reader-actions"></div></div>
+</div>
+
+<script>
+/* ---------- CONTENT ---------- */
+const CORE = `Lord, God of Israel, there is no God like You in heaven above or on the earth below. You keep Your covenant and Your mercy with those who walk before You with all their heart.
+
+As You heard Your servant Solomon, hear me now. I come small before You, but I come with faith. Give me an understanding heart, to know Your voice and to follow it.
+
+Let Your eyes be open toward my house night and day. Hear from heaven, Your dwelling place, and when You hear, forgive.
+
+{PETITION}
+
+Where there is weakness, bring Your strength. Where there is worry, bring Your care. Where there is division, bring Your peace. Guide my steps on the right path, and keep me from every path that leads me away from You.
+
+Into Your hands I place my request:
+
+~Pause here. Tell God your need in your own words, slowly, with your whole heart.
+
+I receive Your answer with faith, in Your time and in Your way. Blessed be the Lord, who gives rest to His people. Not one word of all His good promise has ever failed.`;
+
+const DAYS = [
+ {t:"Surrender",v:"Commit thy works unto the LORD, and thy thoughts shall be established.",ref:"Proverbs 16:3",
+  focus:"Today you place your whole life in God's hands. Before you pray, think of the one burden you carry most.",
+  p:"Lord, today I lay my burden at Your feet. I stop carrying alone what You never asked me to carry alone."},
+ {t:"Wisdom",v:"Give therefore thy servant an understanding heart.",ref:"1 Kings 3:9",
+  focus:"Solomon asked for wisdom before anything else. Today, ask God to show you the right path.",
+  p:"Give me, as You gave Solomon, a listening heart, so I can see my path clearly and choose what pleases You."},
+ {t:"Forgiveness",v:"Hear thou in heaven thy dwelling place: and when thou hearest, forgive.",ref:"1 Kings 8:30",
+  focus:"Unforgiveness ties the heart. Today, release your own faults and the faults of others into God's mercy.",
+  p:"Forgive what I have done wrong, Lord, and give me strength to forgive those who wounded me. Untie my heart."},
+ {t:"Strength",v:"A merry heart doeth good like a medicine.",ref:"Proverbs 17:22",
+  focus:"Today, bring your body, your mind and the people you love who are going through hard days before God.",
+  p:"Be with me in my body and in my mind, Lord. Give me strength for the day, a joyful heart and peace in the difficult moments."},
+ {t:"Daily bread",v:"Feed me with food convenient for me.",ref:"Proverbs 30:8",
+  focus:"Today, bring your work, your plans and your daily needs before God.",
+  p:"Bless the work of my hands, Lord. Give me wisdom with what I have, and gratitude for the bread of each day."},
+ {t:"Family",v:"Except the LORD build the house, they labour in vain that build it.",ref:"Psalm 127:1",
+  focus:"Today, say the name of each person in your family as you pray.",
+  p:"Build my house, Lord. Bring peace to my home, heal what was wounded between us, and cover each one of my family with Your care."},
+ {t:"Gratitude",v:"Blessed be the LORD, that hath given rest unto his people… there hath not failed one word of all his good promise.",ref:"1 Kings 8:56",
+  focus:"On the seventh day God rested. Today, thank Him for what He has done and for what He is still doing.",
+  p:"Today I thank You before I see everything. I trust that not one of Your good promises will fail me."}
+];
+
+const MANUSCRIPT = [
+ {t:"The Beginning of Wisdom",s:"Why Solomon asked for wisdom first",v:"The fear of the LORD is the beginning of wisdom: and the knowledge of the holy is understanding.",ref:"Proverbs 9:10",
+  c:`When God appeared to Solomon in a dream and said, "Ask what I shall give thee," the young king did not ask for riches, long life or victory over his enemies. He asked for an understanding heart (1 Kings 3:9).
+
+This is the first lesson of the manuscript. Before asking God to change what is around us, Solomon asked God to change what was inside him.
+
+A heart that listens to God makes better choices with money, with family and with health. Wisdom does not remove every problem, but it shows us how to walk through each one.`,
+  d:"Before every decision today, big or small, pause for three seconds and pray: \"Lord, what is wise here?\""},
+ {t:"The Lesson of the Ant",s:"Faithfulness in daily work",v:"Go to the ant, thou sluggard; consider her ways, and be wise.",ref:"Proverbs 6:6",
+  c:`Solomon watched the ant, which "provideth her meat in the summer, and gathereth her food in the harvest" (Proverbs 6:8). No one forces the ant to work. It prepares before the need arrives.
+
+In Solomon's teaching, faith and effort walk together. Prayer does not replace work, and work does not replace prayer.
+
+Pray for your day, then do your part with dedication. Small tasks done faithfully, day after day, build a life.`,
+  d:"Choose one task you have been putting off. Finish it today and offer it to God."},
+ {t:"A Good Name",s:"What is worth more than riches",v:"A good name is rather to be chosen than great riches, and loving favour rather than silver and gold.",ref:"Proverbs 22:1",
+  c:`Solomon was the richest king of his time, and yet he wrote that a good name is worth more than great riches.
+
+A good name is built slowly: a promise kept, an honest answer, a debt paid, a kindness no one saw. It cannot be bought, and it is easily lost.
+
+When you choose honesty, even when it costs you something, you are building what Solomon considered the greatest treasure.`,
+  d:"Keep one promise today that you could easily have broken, even a small one."},
+ {t:"The Generous Soul",s:"The joy of giving",v:"The liberal soul shall be made fat: and he that watereth shall be watered also himself.",ref:"Proverbs 11:25",
+  c:`Solomon describes a person who waters the field of others and finds that their own heart is refreshed.
+
+Generosity changes the one who gives. It breaks the fear of not having enough and replaces it with gratitude for what we already have.
+
+You do not need to be rich to be generous. A visit, a phone call, a meal, an hour of your time are all ways of watering someone else's field.`,
+  d:"Bless one person today without expecting anything back, and do not tell anyone about it."},
+ {t:"Guard Your Heart",s:"Protection begins inside",v:"Keep thy heart with all diligence; for out of it are the issues of life.",ref:"Proverbs 4:23",
+  c:`Solomon calls the heart a spring. Everything in your life flows from it: your words, your choices and your relationships.
+
+That is why the first protection is inside. Fear, bitterness and envy are like stones thrown into the spring. They muddy everything downstream.
+
+"Death and life are in the power of the tongue" (Proverbs 18:21). What you repeat about yourself, you begin to believe. Guard what enters your heart and what leaves your mouth.`,
+  d:"Pay attention to the words you speak about yourself today. Each time you hear a complaint, replace it with a word of gratitude."},
+ {t:"The Strong Tower",s:"Where the righteous run",v:"The name of the LORD is a strong tower: the righteous runneth into it, and is safe.",ref:"Proverbs 18:10",
+  c:`Ancient cities had a tower at their center. When danger came, families left their fields and ran to it.
+
+Solomon teaches that God's name is that tower. You do not need to face every battle alone. You can run to Him.
+
+Running is an act of faith. It means admitting you cannot carry everything by yourself, and trusting the One who can.`,
+  d:"When fear or bad news comes today, say His name and repeat this verse out loud."},
+ {t:"A Time for Everything",s:"Trusting God's seasons",v:"To every thing there is a season, and a time to every purpose under the heaven.",ref:"Ecclesiastes 3:1",
+  c:`Late in his life Solomon wrote that there is "a time to plant, and a time to pluck up that which is planted" (Ecclesiastes 3:2). A seed in the ground looks dead for a while, but it is growing where no one can see.
+
+Many people lose heart during the hidden season. Solomon's wisdom is patience with God's calendar.
+
+"He hath made every thing beautiful in his time" (Ecclesiastes 3:11). God's timing is not ours, and He does not forget us.`,
+  d:"Write down what you are waiting for. Next to it, write: \"In His time.\" Keep this paper in your Bible."}
+];
+
+const CATS = [
+ {id:"strength",name:"Strength & Comfort",intro:"Seven prayers for difficult days in the body and in the mind, for you and for the people you love.",
+  note:"These prayers offer comfort and faith. They do not replace medical care: keep following your treatment and your doctor's guidance.",
+  items:[
+  {t:"In times of pain",ref:"Proverbs 18:14",v:"The spirit of a man will sustain his infirmity.",
+   b:`Lord, You know the pain I carry every day, the pain others cannot see.
+
+Give me patience for the hard hours, rest at night and strength in the morning. Comfort me when I feel tired.
+
+Where the pain has made me bitter, renew my spirit. Thank You for every good moment of this day and for the people who care for me.`},
+  {t:"For care of the body",ref:"Proverbs 25:16",v:"Hast thou found honey? eat so much as is sufficient for thee.",
+   b:`Father, You gave me this body, and I want to care for it well.
+
+Give me discipline at the table, patience with my routine and wisdom with my choices. Help me rest, move and eat with balance.
+
+Bless the professionals who care for my health, and give me the humility to follow their guidance.`},
+  {t:"Before a medical appointment",ref:"Proverbs 3:5",v:"Trust in the LORD with all thine heart; and lean not unto thine own understanding.",
+   b:`Lord, I have an appointment ahead of me, and my heart is restless.
+
+Give me calm in the waiting room and clarity to understand what I hear. Give wisdom to those who will examine me.
+
+Whatever the news, I know I will not receive it alone. You are with me.`},
+  {t:"For a clear mind",ref:"Proverbs 2:6",v:"For the LORD giveth wisdom: out of his mouth cometh knowledge and understanding.",
+   b:`Father, I bring You my mind and my thoughts.
+
+Where there is confusion, bring order. Help me focus on what matters and let go of what does not.
+
+For those I love who are getting older, I ask for peace. Give me patience and tenderness with them, and let them always know they are loved.`},
+  {t:"For a heavy heart",ref:"Ecclesiastes 3:4",v:"A time to weep, and a time to laugh; a time to mourn, and a time to dance.",
+   b:`Lord, my heart is heavy, and some days I cannot find the strength to get up.
+
+You are close to the brokenhearted. Sit with me in this moment, and do not let me believe I am alone.
+
+Bring the right people to my side, and give me courage to talk to someone I trust and to ask for help. Turn my season of weeping into a season of joy again, in Your time.`},
+  {t:"For anxious days",ref:"Proverbs 12:25",v:"Heaviness in the heart of man maketh it stoop: but a good word maketh it glad.",
+   b:`Father, my thoughts run ahead of me, and worry tightens my chest.
+
+Speak a good word to my heart today. Calm what is racing inside me. Comfort the old wounds that still hurt when I remember them.
+
+I give You what I cannot control. Teach me to breathe, to rest and to trust that tomorrow is in Your hands.`},
+  {t:"For a loved one who is ill",ref:"Proverbs 18:24",v:"There is a friend that sticketh closer than a brother.",
+   b:`Lord, I bring before You someone I love who is going through a difficult time.
+
+~Say their name here.
+
+Be their closest friend in this season. Surround them with Your presence, with peace and with people who care for them well.
+
+Give me the right words, the patience to stay near and faith for both of us. I place them in Your care.`}
+ ]},
+ {id:"work",name:"Work & Provision",intro:"Seven prayers for your work, your plans and your daily needs.",
+  items:[
+  {t:"For a new job",ref:"Proverbs 16:3",v:"Commit thy works unto the LORD, and thy thoughts shall be established.",
+   b:`Lord, I am looking for work, and You know my needs and my family.
+
+Go before me. Guide my search, prepare me for every interview and give me courage on the hard days.
+
+Take away the shame and fear of this season. I commit my search to You, and I trust You to guide my steps.`},
+  {t:"For favor at work",ref:"Proverbs 22:29",v:"Seest thou a man diligent in his business? he shall stand before kings.",
+   b:`Father, You see every effort I make, even the ones no one else notices.
+
+Help me work with excellence and honesty. Give me good relationships with my leaders and colleagues.
+
+Keep me humble when recognition comes, and faithful while I wait.`},
+  {t:"For your business",ref:"Proverbs 24:3",v:"Through wisdom is an house builded; and by understanding it is established.",
+   b:`Lord, I dedicate my business to You.
+
+Give me wisdom for every decision, honest partners and good relationships with my customers. Keep me from bad deals and dishonest people.
+
+Let my work bless my family, my workers and the people around me.`},
+  {t:"To start something new",ref:"Ecclesiastes 11:6",v:"In the morning sow thy seed, and in the evening withhold not thine hand.",
+   b:`Father, there is a dream in my heart.
+
+Give me courage to begin, wisdom to plan and patience to grow. Show me the first step and the right people to walk with me.
+
+Help me recognize which doors are right for me. I begin this in Your name.`},
+  {t:"While waiting for a payment",ref:"Proverbs 3:27",v:"Withhold not good from them to whom it is due, when it is in the power of thine hand to do it.",
+   b:`Lord, I am waiting for something that is due to me, and the delay worries me.
+
+~Name the situation here.
+
+Give me patience while I wait and wisdom to take the right steps to resolve it. Calm my heart about the bills that are coming.
+
+And help me be fair and on time with everything I owe to others.`},
+  {t:"For freedom from debt",ref:"Proverbs 22:7",v:"The borrower is servant to the lender.",
+   b:`Father, debt has become a weight on my shoulders.
+
+Forgive me for the choices that brought me here. Give me a clear plan, discipline with my spending and the courage to look at the numbers.
+
+Bring good advice my way, and help me take one step at a time. Let me sleep in peace again.`},
+  {t:"For daily bread",ref:"Matthew 6:11",v:"Give us this day our daily bread.",
+   b:`Lord, You know what my house needs today.
+
+Give us our daily bread, and teach me to be grateful for what is already on the table. Free me from the worry of always wanting more.
+
+Help me share what I have, and let me be the first to say thank You for every good thing that comes.`}
+ ]},
+ {id:"family",name:"Family",intro:"Seven prayers for marriage, children and peace in the home.",
+  items:[
+  {t:"For a marriage in crisis",ref:"Song of Solomon 8:7",v:"Many waters cannot quench love, neither can the floods drown it.",
+   b:`Lord, my marriage is going through deep waters.
+
+Where love has grown cold, rekindle it. Where words have hurt, bring healing. Remind us of the day we chose each other.
+
+Give us humility to listen and courage to change. Strengthen this home, Lord, because we cannot do it alone.`},
+  {t:"For peace after a separation",ref:"Proverbs 17:9",v:"He that covereth a transgression seeketh love.",
+   b:`Father, a relationship in my life has been broken, and it hurts.
+
+Heal my heart and take away bitterness and pride from me. If there is a chance for a conversation, let it be with respect and without accusation.
+
+Help me respect the other person's choices, and give me peace to move forward, whatever happens.`},
+  {t:"For children who are far away",ref:"Proverbs 22:6",v:"Train up a child in the way he should go: and when he is old, he will not depart from it.",
+   b:`Lord, I bring You my children, near and far.
+
+Where they are, You are there too. Be with them on the roads, at work and in their choices. Bring to their memory everything good they learned at home.
+
+Keep the bond of love between us, Lord, and heal what is wounded.`},
+  {t:"For healing a wounded home",ref:"Proverbs 15:1",v:"A soft answer turneth away wrath: but grievous words stir up anger.",
+   b:`Father, my home carries wounds: words that should not have been said and silences that went on too long.
+
+Teach us to answer softly. Take away the shouting and bring back laughter.
+
+Let my house be a place of rest again, for everyone who lives here.`},
+  {t:"For peace at the table",ref:"Proverbs 17:1",v:"Better is a dry morsel, and quietness therewith, than an house full of sacrifices with strife.",
+   b:`Lord, bless our table, the food on it and every person who sits around it.
+
+Let our meals be a place of peace and not of arguments. Bring the family together around one table.
+
+Thank You for the bread of today.`},
+  {t:"For unity among relatives",ref:"Ecclesiastes 4:12",v:"A threefold cord is not quickly broken.",
+   b:`Father, our family has been divided by old fights and pride.
+
+Be the third strand that ties us together. Soften hard hearts, starting with mine. Give us the chance to sit together again.
+
+Let the next generation see a united family, Lord.`},
+  {t:"For God's care over the household",ref:"Psalm 127:1",v:"Except the LORD keep the city, the watchman waketh but in vain.",
+   b:`Lord, be the watchman of my house.
+
+Watch over every room and every person who sleeps here, those who leave in the morning and those who come back at night.
+
+This house belongs to You. Fill it with Your peace.`}
+ ]},
+ {id:"peace",name:"Peace & Protection",intro:"Seven prayers for a calm heart, wise choices and safe paths.",
+  items:[
+  {t:"For a heart free from envy",ref:"Proverbs 14:30",v:"A sound heart is the life of the flesh: but envy the rottenness of the bones.",
+   b:`Lord, guard my heart from envy, both the envy I feel and the envy I fear from others.
+
+Teach me to celebrate what others receive, and to be grateful for what You have given me.
+
+Let me bless those who do not bless me, and keep my peace no matter what others say.`},
+  {t:"For relief from heavy burdens",ref:"Matthew 11:28",v:"Come unto me, all ye that labour and are heavy laden, and I will give you rest.",
+   b:`Father, I am carrying weights that are too heavy for me: guilt, old habits and worries that never leave.
+
+I bring them to You now. Give me rest, and help me put down what I was never meant to carry.
+
+Give me strength to change what I can, and peace to accept what I cannot.`},
+  {t:"When the path seems closed",ref:"Proverbs 3:6",v:"In all thy ways acknowledge him, and he shall direct thy paths.",
+   b:`Lord, every time I try something new, it seems a wall rises in front of me.
+
+I acknowledge You in all my ways. Direct my paths. Show me if I need to wait, to change direction or to keep going.
+
+When a door closes, give me peace. When it is time to go forward, give me courage.`},
+  {t:"For words that bring life",ref:"Proverbs 18:21",v:"Death and life are in the power of the tongue.",
+   b:`Father, words have hurt me, words spoken by others and words I spoke over myself.
+
+Heal what those words wounded. Do not let them define who I am.
+
+From today, help me speak life, gratitude and kindness over my home, my family and my own heart.`},
+  {t:"For discernment",ref:"Proverbs 3:25–26",v:"Be not afraid of sudden fear… for the LORD shall be thy confidence, and shall keep thy foot from being taken.",
+   b:`Lord, You see what I cannot see.
+
+Give me discernment to recognize false friends, bad deals and dangerous choices in time. Give me the courage to say no when I need to.
+
+You are my confidence. I will not be afraid of sudden fear.`},
+  {t:"For peaceful sleep",ref:"Proverbs 3:24",v:"When thou liest down, thou shalt not be afraid: yea, thou shalt lie down, and thy sleep shall be sweet.",
+   b:`Father, I end this day in Your hands.
+
+Quiet my mind. Take away the worries and thoughts that keep me awake.
+
+Watch over every person in this house tonight. Let my sleep be sweet, and let me wake up renewed.`},
+  {t:"For a safe journey",ref:"Proverbs 3:23",v:"Then shalt thou walk in thy way safely, and thy foot shall not stumble.",
+   b:`Lord, go before me on this trip.
+
+Keep me alert and patient on the road. Watch over me and every person traveling with me.
+
+Bring me back home in peace, and watch over everyone I love who is traveling today.`}
+ ]}
+];
+
+const SPECIES = ["Wheat","Barley","Grapes","Figs","Pomegranates","Olive oil","Honey (dates)"];
+const RECIPES = [
+ {t:"Ezekiel bread",s:"The bread of the prophet",ref:"Ezekiel 4:9",
+  ing:["1 cup whole wheat flour","½ cup barley flour","¼ cup spelt or millet flour","¼ cup cooked lentils, mashed","1 tsp salt","1 tbsp olive oil","About ¾ cup warm water"],
+  steps:["Mix the flours and salt in a bowl.","Add the mashed lentils, olive oil and water little by little until a soft dough forms.","Knead for 5 minutes and divide into 6 balls.","Flatten each ball and cook in a dry pan over medium heat, 2–3 minutes per side."]},
+ {t:"Jacob's red lentil stew",s:"The stew of Genesis 25",ref:"Genesis 25:34",
+  ing:["1 cup red lentils","1 onion, chopped","2 garlic cloves","1 carrot, diced","1 tsp cumin","4 cups water or broth","2 tbsp olive oil","Salt and lemon"],
+  steps:["Warm the olive oil and cook the onion, garlic and carrot until soft.","Add the cumin and stir for one minute.","Add the lentils and water. Simmer for 20–25 minutes until creamy.","Season with salt and finish with lemon juice. Serve with bread."]},
+ {t:"Fig, date and honey bites",s:"A sweet of the Promised Land",ref:"Deuteronomy 8:8",
+  ing:["6 dried figs","6 pitted dates","½ cup walnuts or almonds","1 tbsp honey","Pinch of cinnamon","Sesame seeds to coat"],
+  steps:["Chop the figs, dates and nuts very finely, or pulse them in a blender.","Mix with the honey and cinnamon.","Roll into small balls and coat with sesame.","Keep in the fridge for up to one week."]},
+ {t:"Pomegranate and barley salad",s:"Fruits of the temple pillars",ref:"1 Kings 7:18",
+  ing:["1 cup cooked barley","Seeds of 1 pomegranate","1 cucumber, diced","Handful of fresh mint and parsley","3 tbsp olive oil","Juice of 1 lemon","Salt"],
+  steps:["Let the cooked barley cool.","Combine with the pomegranate seeds, cucumber and herbs.","Dress with olive oil, lemon and salt.","Serve cold."]},
+ {t:"Galilee fish with olive oil",s:"The meal by the sea",ref:"John 21:9",
+  ing:["2 white fish fillets","3 tbsp olive oil","2 garlic cloves","1 lemon","Fresh dill or parsley","Salt"],
+  steps:["Season the fish with salt, garlic and lemon.","Cook in a pan with olive oil, 3–4 minutes per side.","Finish with herbs and more lemon.","Serve with bread, as Jesus served the disciples by the sea."]}
+];
+
+/* ---------- STATE ---------- */
+const store = {
+  get(k,d){try{const v=localStorage.getItem("sp:"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem("sp:"+k,JSON.stringify(v))}catch(e){}}
+};
+let done = new Set(store.get("done",[]));
+let favs = new Set(store.get("favs",[]));
+let fs = store.get("fs",1);
+let tab = "home", cat = "strength";
+const $ = s => document.querySelector(s);
+const view = $("#view");
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function applyFs(){document.documentElement.style.setProperty("--fs",fs)}
+function bumpFs(d){fs=Math.min(1.5,Math.max(.85,+(fs+d).toFixed(2)));store.set("fs",fs);applyFs()}
+["fs-down","r-fs-down"].forEach(id=>$("#"+id).onclick=()=>bumpFs(-.1));
+["fs-up","r-fs-up"].forEach(id=>$("#"+id).onclick=()=>bumpFs(.1));
+applyFs();
+
+const nextDay = () => { for(let i=0;i<7;i++) if(!done.has(i)) return i; return 6; };
+function paras(text){
+  return text.split("\n\n").map(p => p.startsWith("~") ? `<p class="rubric">${esc(p.slice(1))}</p>` : `<p>${esc(p)}</p>`).join("");
+}
+function lampsHTML(){
+  const n = nextDay();
+  return `<div class="lamps" aria-label="${done.size} of 7 days prayed">${DAYS.map((d,i)=>
+    `<div class="lamp ${done.has(i)?"lit":""} ${i===n&&!done.has(i)?"today":""}"><div class="flame"></div>${i+1}</div>`).join("")}</div>`;
+}
+
+/* ---------- VIEWS ---------- */
+function home(){
+  const n = nextDay(), all = done.size===7;
+  return `
+  <div class="hero">
+    <div class="eyebrow">${all?"Seven days complete":`Day ${n+1} of 7 · ${DAYS[n].t}`}</div>
+    <h1>${all?"You finished the seven days":"The Lost Prayer of Solomon"}</h1>
+    <p>${all?"Keep praying daily. The more consistently you pray, the more you will notice God's hand in the details.":"A few minutes a day, for seven days, with faith. Today's lamp is waiting for you."}</p>
+    ${lampsHTML()}
+    <button class="cta" data-open-day="${n}">${all?"Pray again today":`Pray Day ${n+1}`}</button>
+  </div>
+  ${installCard()}
+
+  <section class="block">
+    <div class="block-head"><h2>Three spiritual pillars</h2></div>
+    <div class="pillars">
+      <button class="pillar" data-go="lost"><span class="numeral">I</span><div><strong>The Lost Prayer of Solomon</strong><span>7-day journey · a few minutes a day</span></div><span class="chev">›</span></button>
+      <button class="pillar" data-go="manuscript"><span class="numeral">II</span><div><strong>The Manuscript of Solomon</strong><span>${MANUSCRIPT.length} teachings with commentary</span></div><span class="chev">›</span></button>
+      <button class="pillar" data-go="prayers"><span class="numeral">III</span><div><strong>Specific Prayers</strong><span>${CATS.reduce((a,c)=>a+c.items.length,0)} prayers for daily needs</span></div><span class="chev">›</span></button>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block-head"><h2>Your gifts</h2><button class="link" data-go="bonus">See all</button></div>
+    <div class="bonus-row">
+      <button class="bonus-tile" data-go="bonus"><small>Gift 1</small><b>Bible of Solomon</b></button>
+      <button class="bonus-tile" data-go="bonus"><small>Gift 2</small><b>Divine Vitality</b></button>
+      <button class="bonus-tile" data-go="bonus"><small>Gift 3</small><b>Song of God</b></button>
+    </div>
+  </section>
+  ${favs.size?`<section class="block"><div class="block-head"><h2>Saved prayers</h2></div><div class="list">${[...favs].map(favRow).join("")}</div></section>`:""}`;
+}
+function favRow(key){
+  const [ci,ii]=key.split(":").map(Number), c=CATS[ci], p=c&&c.items[ii];
+  if(!p) return "";
+  return `<button class="row" data-prayer="${key}"><span class="fav-mark">★</span><div><strong>${esc(p.t)}</strong><span>${c.name}</span></div><span class="chev">›</span></button>`;
+}
+
+function lost(){
+  const n = nextDay();
+  return `
+  <div class="page-title"><span class="eyebrow">Pillar I</span><h1>The Lost Prayer of Solomon</h1>
+  <p class="intro">Pray once a day for seven days. Seven is the number of completion: seven days of creation, seven trumpets, seven times around Jericho. Read it slowly, aloud or in silence.</p></div>
+  <section class="block">${lampsHTML()}
+  <div class="list">${DAYS.map((d,i)=>`
+    <button class="row" data-open-day="${i}"><span class="idx">${i+1}</span>
+      <div><strong>${d.t}</strong><span>${esc(d.ref)}</span></div>
+      ${done.has(i)?`<span class="state done">Prayed</span>`:i===n?`<span class="state next">Today</span>`:`<span class="chev">›</span>`}
+    </button>`).join("")}</div>
+  ${done.size?`<button class="link" id="reset" style="justify-self:start">Restart the seven days</button>`:""}
+  </section>`;
+}
+
+function manuscript(){
+  return `
+  <div class="page-title"><span class="eyebrow">Pillar II</span><h1>The Manuscript of Solomon</h1>
+  <p class="intro">Solomon's teachings on wisdom, work, generosity and trust in God, with commentary and one practice for each day.</p></div>
+  <section class="block"><div class="list">${MANUSCRIPT.map((m,i)=>`
+    <button class="row" data-ms="${i}"><span class="idx">${["I","II","III","IV","V","VI","VII"][i]}</span>
+      <div><strong>${esc(m.t)}</strong><span>${esc(m.s)}</span></div><span class="chev">›</span></button>`).join("")}</div></section>`;
+}
+
+function prayers(){
+  const ci = CATS.findIndex(c=>c.id===cat), c = CATS[ci];
+  return `
+  <div class="page-title"><span class="eyebrow">Pillar III</span><h1>Specific Prayers</h1>
+  <p class="intro">Prayers for the needs of everyday life. Choose the area of your life you want to bring before God.</p></div>
+  <section class="block">
+    <div class="tabs" role="group" aria-label="Categories">${CATS.map(x=>`<button data-cat="${x.id}" aria-pressed="${x.id===cat}">${x.name} · 7</button>`).join("")}</div>
+    <p class="intro">${c.intro}</p>
+    ${c.note?`<div class="note">${c.note}</div>`:""}
+    <div class="list">${c.items.map((p,i)=>`
+      <button class="row" data-prayer="${ci}:${i}"><span class="idx">${i+1}</span>
+        <div><strong>${esc(p.t)}</strong><span>${esc(p.ref)}</span></div>
+        ${favs.has(ci+":"+i)?`<span class="fav-mark">★</span>`:`<span class="chev">›</span>`}</button>`).join("")}</div>
+  </section>`;
+}
+
+function bonus(){
+  return `
+  <div class="page-title"><span class="eyebrow">Your gifts</span><h1>Three sacred gifts</h1></div>
+  <section class="block">
+    <div class="block-head"><h2>The Song of God</h2></div>
+    <div class="player" id="player">
+      <div class="disc"></div>
+      <div><div class="eyebrow" style="color:var(--gold-bright)">Hebrew chant · 7 minutes</div><p style="margin:.3em 0 0;opacity:.85">Listen while you pray, on your walks or before you sleep.</p></div>
+      <button class="play" id="play" aria-label="Play">▶</button>
+      <div class="track"><i id="bar"></i></div>
+      <div class="times"><span id="t-now">0:00</span><span>7:00</span></div>
+    </div>
+  </section>
+  <section class="block">
+    <div class="block-head"><h2>Divine Vitality</h2></div>
+    <p class="intro">Recipes from the foods of biblical times, built on the seven species of the Promised Land.</p>
+    <div class="species">${SPECIES.map(s=>`<span>${s}</span>`).join("")}</div>
+    <div class="list">${RECIPES.map((r,i)=>`
+      <button class="row" data-recipe="${i}"><span class="idx">${i+1}</span><div><strong>${esc(r.t)}</strong><span>${esc(r.s)} · ${esc(r.ref)}</span></div><span class="chev">›</span></button>`).join("")}</div>
+  </section>
+  <section class="block">
+    <div class="block-head"><h2>The Bible of Solomon</h2></div>
+    <div class="cover">
+      <span class="eyebrow">Printed edition</span>
+      <h2>The Bible of Solomon</h2>
+      <p style="margin:0;opacity:.85">With the Lost Prayer of Solomon highlighted and a personal dedication with your name printed on the cover.</p>
+    </div>
+    <div class="note">The printed edition is sent only to participants whose copy was reserved at purchase. If yours was reserved, our team will contact you by email to confirm your shipping address.</div>
+  </section>`;
+}
+
+const VIEWS = {home,lost,manuscript,prayers,bonus};
+function render(){
+  view.innerHTML = VIEWS[tab]();
+  document.querySelectorAll("nav.bar button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===tab?"page":"false"));
+  if(tab==="bonus") bindPlayer();
+}
+function go(t){ tab=t; render(); window.scrollTo(0,0); }
+
+/* ---------- READER ---------- */
+const reader = $("#reader"), rbody = $("#reader-body"), ractions = $("#reader-actions");
+function openReader(html, actions){
+  rbody.innerHTML = html; ractions.innerHTML = actions;
+  reader.hidden = false; reader.scrollTop = 0; document.body.style.overflow="hidden";
+}
+function closeReader(){ reader.hidden = true; document.body.style.overflow=""; render(); }
+$("#reader-back").onclick = closeReader;
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !reader.hidden) closeReader(); });
+
+function openDay(i){
+  const d = DAYS[i];
+  const body = CORE.replace("{PETITION}", "\u0000");
+  const html = `<span class="eyebrow">Day ${i+1} of 7 · ${d.t}</span><h1>The Lost Prayer of Solomon</h1>
+    <blockquote class="verse">${esc(d.v)}<cite>${esc(d.ref)}</cite></blockquote>
+    <div class="text"><p class="rubric">${esc(d.focus)}</p>
+    ${paras(body).replace(`<p>\u0000</p>`, `<p class="petition">${esc(d.p)}</p>`)}<p class="amen">Amen.</p></div>`;
+  const isDone = done.has(i);
+  openReader(html, `<button class="btn ${isDone?"done":"primary"}" id="mark">${isDone?"✓ Prayed":"I prayed today"}</button>`);
+  $("#mark").onclick = () => {
+    if(done.has(i)) done.delete(i); else done.add(i);
+    store.set("done",[...done]);
+    const m = $("#mark"), on = done.has(i);
+    m.className = "btn " + (on?"done":"primary"); m.textContent = on?"✓ Prayed":"I prayed today";
+  };
+}
+function openPrayer(key){
+  const [ci,ii]=key.split(":").map(Number), c=CATS[ci], p=c.items[ii];
+  const html = `<span class="eyebrow">${c.name} · Prayer ${ii+1} of 7</span><h1>${esc(p.t)}</h1>
+    <blockquote class="verse">${esc(p.v)}<cite>${esc(p.ref)}</cite></blockquote>
+    ${c.note?`<div class="note" style="margin:12px 0 16px">${c.note}</div>`:""}
+    <div class="text">${paras(p.b)}<p class="amen">Amen.</p></div>`;
+  const fav = () => favs.has(key);
+  openReader(html, `<button class="btn ${fav()?"done":"primary"}" id="fav">${fav()?"★ Saved":"☆ Save prayer"}</button>`);
+  $("#fav").onclick = () => {
+    fav() ? favs.delete(key) : favs.add(key); store.set("favs",[...favs]);
+    const b=$("#fav"); b.className="btn "+(fav()?"done":"primary"); b.textContent=fav()?"★ Saved":"☆ Save prayer";
+  };
+}
+function openMs(i){
+  const m = MANUSCRIPT[i];
+  const html = `<span class="eyebrow">Manuscript · Teaching ${i+1} of ${MANUSCRIPT.length}</span><h1>${esc(m.t)}</h1>
+    <blockquote class="verse">${esc(m.v)}<cite>${esc(m.ref)}</cite></blockquote>
+    <div class="text"><h3>Commentary</h3>${paras(m.c)}<h3>Practice for today</h3><p class="petition">${esc(m.d)}</p></div>`;
+  const nxt = i+1 < MANUSCRIPT.length;
+  openReader(html, nxt ? `<button class="btn primary" id="next">Next teaching ›</button>` : `<button class="btn primary" id="done-ms">Back to the manuscript</button>`);
+  if(nxt) $("#next").onclick = () => openMs(i+1); else $("#done-ms").onclick = closeReader;
+}
+function openRecipe(i){
+  const r = RECIPES[i];
+  const html = `<span class="eyebrow">Divine Vitality · ${esc(r.ref)}</span><h1>${esc(r.t)}</h1>
+    <div class="text"><h3>Ingredients</h3><ul>${r.ing.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+    <h3>How to make it</h3><ol>${r.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>
+    <p class="rubric">Before eating, give thanks: "Lord, bless this food and the hands that prepared it."</p></div>`;
+  openReader(html, `<button class="btn primary" id="back2">Back to recipes</button>`);
+  $("#back2").onclick = closeReader;
+}
+
+/* ---------- SONG OF GOD (generated sacred tones) ---------- */
+const DUR = 420;
+let ac=null, master=null, timer=null, noteTimer=null, elapsed=0, startedAt=0, playing=false;
+const SCALE = [293.66,311.13,369.99,392.00,440.00,466.16,523.25,587.33]; // D freygish (Ahava Rabbah)
+function fmt(s){s=Math.floor(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function buildAudio(){
+  ac = new (window.AudioContext||window.webkitAudioContext)();
+  master = ac.createGain(); master.gain.value = 0;
+  const delay = ac.createDelay(); delay.delayTime.value = .45;
+  const fb = ac.createGain(); fb.gain.value = .45;
+  const lp = ac.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=1800;
+  delay.connect(fb); fb.connect(delay); delay.connect(lp); lp.connect(master); master.connect(ac.destination);
+  master._delay = delay;
+  [73.42,110,146.83].forEach((f,k)=>{
+    const o=ac.createOscillator(), g=ac.createGain(), f2=ac.createBiquadFilter();
+    o.type = k===1?"triangle":"sawtooth"; o.frequency.value=f; o.detune.value=(k-1)*4;
+    f2.type="lowpass"; f2.frequency.value=380; g.gain.value=k===1?.12:.06;
+    const lfo=ac.createOscillator(), lg=ac.createGain(); lfo.frequency.value=.05+k*.03; lg.gain.value=.04;
+    lfo.connect(lg); lg.connect(g.gain); lfo.start();
+    o.connect(f2); f2.connect(g); g.connect(master); o.start();
+  });
+}
+function chantNote(){
+  if(!playing) return;
+  const t=ac.currentTime, f=SCALE[Math.floor(Math.random()*SCALE.length)]*(Math.random()<.3?.5:1);
+  const o=ac.createOscillator(), o2=ac.createOscillator(), g=ac.createGain();
+  o.type="sine"; o2.type="triangle"; o.frequency.value=f; o2.frequency.value=f*2; o2.detune.value=6;
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.09,t+1.2); g.gain.exponentialRampToValueAtTime(.0005,t+5.5);
+  const g2=ac.createGain(); g2.gain.value=.25; o2.connect(g2); g2.connect(g);
+  o.connect(g); g.connect(master); g.connect(master._delay); o.start(t); o2.start(t); o.stop(t+6); o2.stop(t+6);
+  noteTimer = setTimeout(chantNote, 2500+Math.random()*3500);
+}
+function tick(){
+  const now = elapsed + (playing ? ac.currentTime-startedAt : 0);
+  const bar=$("#bar"), tn=$("#t-now");
+  if(bar) bar.style.width = Math.min(100,now/DUR*100)+"%";
+  if(tn) tn.textContent = fmt(Math.min(now,DUR));
+  if(now>=DUR){ pause(true); }
+}
+function play(){
+  if(!ac) buildAudio();
+  ac.resume(); startedAt = ac.currentTime; playing = true;
+  master.gain.cancelScheduledValues(ac.currentTime);
+  master.gain.setValueAtTime(master.gain.value,ac.currentTime); master.gain.linearRampToValueAtTime(.8,ac.currentTime+3);
+  chantNote(); timer = setInterval(tick,500); syncPlayer();
+}
+function pause(end){
+  if(!ac||!playing) return;
+  elapsed += ac.currentTime-startedAt; playing=false;
+  clearTimeout(noteTimer); clearInterval(timer);
+  master.gain.setValueAtTime(master.gain.value,ac.currentTime); master.gain.linearRampToValueAtTime(0,ac.currentTime+1.5);
+  setTimeout(()=>{ if(!playing) ac.suspend(); },1700);
+  if(end===true) elapsed=0;
+  syncPlayer(); tick();
+}
+function syncPlayer(){
+  const p=$("#player"), b=$("#play"); if(!p) return;
+  p.classList.toggle("playing",playing); b.textContent = playing?"❚❚":"▶"; b.setAttribute("aria-label",playing?"Pause":"Play");
+}
+function bindPlayer(){
+  $("#play").onclick = () => { try{ playing ? pause() : play(); }catch(e){} };
+  syncPlayer(); if(ac) tick();
+}
+
+/* ---------- EVENTS ---------- */
+document.addEventListener("click", e => {
+  const t = e.target.closest("button"); if(!t) return;
+  if(t.dataset.tab){ go(t.dataset.tab); }
+  else if(t.dataset.go){ go(t.dataset.go); }
+  else if(t.dataset.openDay!=null){ openDay(+t.dataset.openDay); }
+  else if(t.dataset.prayer){ openPrayer(t.dataset.prayer); }
+  else if(t.dataset.ms!=null){ openMs(+t.dataset.ms); }
+  else if(t.dataset.recipe!=null){ openRecipe(+t.dataset.recipe); }
+  else if(t.dataset.cat){ cat=t.dataset.cat; render(); }
+  else if(t.id==="reset"){ done.clear(); store.set("done",[]); render(); }
+  else if(t.hasAttribute("data-install")){ startInstall(); }
+  else if(t.dataset.plat){ openGuide(t.dataset.plat); }
+  else if(t.id==="copy-link"){ copyLink(t); }
+  else if(t.id==="guide-close"){ closeReader(); }
+});
+
+/* ---------- INSTALL ---------- */
+const UA = navigator.userAgent;
+const IS_IOS = /iPhone|iPad|iPod/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const IS_ANDROID = /Android/.test(UA);
+const IOS_VER = (() => { const m = UA.match(/OS (\d+)_(\d+)/); return m ? +m[1] + +m[2]/100 : 0; })();
+const IN_APP = /FBAN|FBAV|FB_IAB|FBIOS|Instagram|Line\/|TikTok|BytedanceWebview|musical_ly|Snapchat|Twitter|Pinterest|LinkedInApp|GSA\//.test(UA) || (IS_ANDROID && /; wv\)/.test(UA));
+const IN_APP_NAME = /Instagram/.test(UA) ? "Instagram" : /FBAN|FBAV|FB_IAB|FBIOS/.test(UA) ? "Facebook" : /TikTok|musical_ly|Bytedance/.test(UA) ? "TikTok" : "this app";
+const IOS_BROWSER = /CriOS/.test(UA) ? "Chrome" : /FxiOS/.test(UA) ? "Firefox" : /EdgiOS/.test(UA) ? "Edge" : "Safari";
+const ANDROID_BROWSER = /SamsungBrowser/.test(UA) ? "samsung" : /Firefox/.test(UA) ? "firefox" : /EdgA/.test(UA) ? "edge" : /OPR|Opera/.test(UA) ? "opera" : "chrome";
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+let installPrompt = null;
+
+const ICO = {
+  share:`<span class="ico" aria-label="Share icon"><svg viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg></span>`,
+  plus:`<span class="ico" aria-label="Add icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg></span>`,
+  vdots:`<span class="ico" aria-label="Menu with three dots"><svg viewBox="0 0 24 24"><circle class="dot" cx="12" cy="5" r="1.8"/><circle class="dot" cx="12" cy="12" r="1.8"/><circle class="dot" cx="12" cy="19" r="1.8"/></svg></span>`,
+  hdots:`<span class="ico" aria-label="Three dots button"><svg viewBox="0 0 24 24"><circle class="dot" cx="5" cy="12" r="1.8"/><circle class="dot" cx="12" cy="12" r="1.8"/><circle class="dot" cx="19" cy="12" r="1.8"/></svg></span>`,
+  menu:`<span class="ico" aria-label="Menu with three lines"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>`,
+  install:`<span class="ico" aria-label="Install icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M12 7v6M9 10.5l3 3 3-3M8 21h8"/></svg></span>`
+};
+
+function installCard(){
+  if(isStandalone()) return "";
+  return `<div class="install">
+    <img src="icons/icon-192.png" alt="">
+    <div><strong>Install Sacred Prayer</strong><span>Put the app on your home screen. It opens full screen, like any other app, and works without internet.</span></div>
+    <button class="btn primary" data-install>${installPrompt ? "Install the app" : "How to install"}</button>
+  </div>`;
+}
+function syncInstallUI(){
+  const h = $("#hdr-install"); if(h) h.hidden = isStandalone();
+}
+
+async function startInstall(){
+  if(installPrompt){
+    installPrompt.prompt();
+    const choice = await installPrompt.userChoice.catch(()=>null);
+    installPrompt = null;
+    if(choice && choice.outcome === "accepted"){ toast("Installing Sacred Prayer…"); closeReader(); render(); return; }
+    render();
+  }
+  openGuide(IS_IOS ? "ios" : IS_ANDROID ? "android" : "computer");
+}
+
+function stepsHTML(list){ return `<ol class="steps">${list.map(s=>`<li><div>${s}</div></li>`).join("")}</ol>`; }
+
+function inAppSteps(plat){
+  return plat === "ios" ? [
+    `Tap the ${ICO.hdots} button at the <b>top right</b> of the screen.<small>On Facebook it may be at the bottom right.</small>`,
+    `Tap <b>"Open in external browser"</b>.<small>It may also appear as "Open in Safari" or "Open in browser".</small>`,
+    `The app opens in Safari. Tap <b>Install</b> again and follow the steps.`
+  ] : [
+    `Tap the ${ICO.vdots} button at the <b>top right</b> of the screen.`,
+    `Tap <b>"Open in Chrome"</b> or <b>"Open in external browser"</b>.`,
+    `The app opens in your browser. Tap <b>Install</b> again and follow the steps.`
+  ];
+}
+
+function iosSteps(){
+  if(IOS_BROWSER === "Safari") return [
+    `Tap the <b>Share</b> button ${ICO.share} at the bottom of the screen.<small>On iOS 26, first tap ${ICO.hdots} at the bottom right, then tap Share. On iPad, Share is at the top right.</small>`,
+    `Scroll down the list and tap <b>"Add to Home Screen"</b> ${ICO.plus}.<small>Don't see it? Tap "View More" at the bottom of the list.</small>`,
+    `Leave <b>"Open as Web App"</b> turned on and tap <b>Add</b> at the top right.<small>On older iPhones this option doesn't appear. Just tap Add.</small>`,
+    `Close Safari and open <b>Sacred Prayer</b> from the new icon on your Home Screen.`
+  ];
+  const where = IOS_BROWSER === "Chrome" ? "in the address bar at the top right" : IOS_BROWSER === "Edge" ? "at the bottom of the screen" : "inside the menu " + ICO.menu;
+  return [
+    `Tap the <b>Share</b> button ${ICO.share} ${where}.`,
+    `Tap <b>"Add to Home Screen"</b> ${ICO.plus}.<small>Don't see it? Tap "View More", or open this page in Safari, which always shows this option.</small>`,
+    `Tap <b>Add</b> at the top right.`,
+    `Open <b>Sacred Prayer</b> from the new icon on your Home Screen.`
+  ];
+}
+
+function androidSteps(){
+  const b = IS_ANDROID ? ANDROID_BROWSER : "chrome";
+  if(b === "samsung") return [
+    `Tap the menu ${ICO.menu} at the <b>bottom right</b> of the screen.<small>If you see the install icon ${ICO.install} in the address bar, you can tap it instead.</small>`,
+    `Tap <b>"Add page to"</b>, then <b>"Home screen"</b>.`,
+    `Tap <b>Add</b> to confirm.`,
+    `Open <b>Sacred Prayer</b> from your home screen.`
+  ];
+  if(b === "firefox") return [
+    `Tap the menu ${ICO.vdots} (top right or bottom right).`,
+    `Tap <b>"Add app to Home screen"</b> or <b>"Install"</b>.`,
+    `Tap <b>Add</b> to confirm.`,
+    `Open <b>Sacred Prayer</b> from your home screen.`
+  ];
+  return [
+    `Tap the menu ${ICO.vdots} at the <b>top right</b> of ${b === "chrome" ? "Chrome" : "your browser"}.`,
+    `Tap <b>"Add to Home screen"</b> or <b>"Install app"</b>.<small>The name changes depending on your phone. In Edge, look for "Add to phone".</small>`,
+    `Tap <b>Install</b> to confirm.<small>If Android asks again, tap "Add to home screen" or "Add automatically".</small>`,
+    `Open <b>Sacred Prayer</b> from your home screen or app list.`
+  ];
+}
+
+function computerSteps(){
+  return [
+    `<b>Best on your phone:</b> open this link on your phone and tap Install there.`,
+    `<b>Chrome or Edge on a computer:</b> click the install icon ${ICO.install} at the right side of the address bar, then <b>Install</b>.<small>Or open the menu ${ICO.vdots}, then "Cast, save and share" › "Install page as app".</small>`,
+    `<b>Safari on a Mac:</b> open the <b>File</b> menu and choose <b>"Add to Dock"</b>.`
+  ];
+}
+
+function openGuide(plat){
+  const current = IS_IOS ? "ios" : IS_ANDROID ? "android" : "computer";
+  const inApp = IN_APP && plat === current;
+  let body;
+  if(inApp){
+    body = `<div class="alert">You are inside <b>${IN_APP_NAME}</b>. Apps can only be installed from ${plat === "ios" ? "Safari" : "Chrome"}. First open this page in your browser:</div>
+      ${stepsHTML(inAppSteps(plat))}
+      <p class="intro">Or copy the link and paste it into ${plat === "ios" ? "Safari" : "Chrome"}:</p>
+      <div class="copybox"><code>${esc(location.href.split("?")[0])}</code><button class="chip-btn" id="copy-link">Copy</button></div>`;
+  } else if(plat === "ios"){
+    const tooOld = IS_IOS && IOS_BROWSER !== "Safari" && IOS_VER && IOS_VER < 16.4;
+    body = (tooOld ? `<div class="alert">On this iPhone, apps can only be installed from <b>Safari</b>. Copy the link below and open it in Safari.</div>
+      <div class="copybox"><code>${esc(location.href.split("?")[0])}</code><button class="chip-btn" id="copy-link">Copy</button></div>` : "")
+      + stepsHTML(iosSteps());
+  } else if(plat === "android"){
+    body = stepsHTML(androidSteps());
+  } else {
+    body = stepsHTML(computerSteps()) + `<div class="copybox"><code>${esc(location.href.split("?")[0])}</code><button class="chip-btn" id="copy-link">Copy</button></div>`;
+  }
+  const html = `<div class="guide">
+    <span class="eyebrow">Install the app</span>
+    <h1>Put Sacred Prayer on your home screen</h1>
+    <div class="seg" role="group" aria-label="Choose your device" style="grid-template-columns:repeat(3,1fr)">
+      <button data-plat="ios" aria-pressed="${plat==="ios"}">iPhone</button>
+      <button data-plat="android" aria-pressed="${plat==="android"}">Android</button>
+      <button data-plat="computer" aria-pressed="${plat==="computer"}">Computer</button>
+    </div>
+    ${body}
+    <p class="intro">It's free to install, takes no space in your storage like a store app, and your progress stays saved on this device.</p>
+  </div>`;
+  const actions = installPrompt && plat !== "ios"
+    ? `<button class="btn primary" data-install>Install now</button>`
+    : `<button class="btn primary" id="guide-close">Got it</button>`;
+  if(reader.hidden) openReader(html, actions);
+  else { rbody.innerHTML = html; ractions.innerHTML = actions; }
+}
+
+async function copyLink(btn){
+  const url = location.href.split("?")[0];
+  try{ await navigator.clipboard.writeText(url); btn.textContent = "Copied"; }
+  catch(e){
+    const r = document.createRange(), code = btn.previousElementSibling; r.selectNodeContents(code);
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected";
+  }
+}
+
+function toast(msg){
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; t.setAttribute("role","status");
+  document.body.appendChild(t); setTimeout(()=>t.remove(), 3200);
+}
+
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installPrompt = e; if(tab==="home" && reader.hidden) render(); });
+window.addEventListener("appinstalled", () => { installPrompt = null; toast("Sacred Prayer was installed"); syncInstallUI(); if(tab==="home") render(); });
+matchMedia("(display-mode: standalone)").addEventListener?.("change", () => { syncInstallUI(); render(); });
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+
+syncInstallUI();
+render();
+</script>
+</body>
+</html>
