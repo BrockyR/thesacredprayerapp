@@ -15,10 +15,17 @@ Installable web app (PWA) with:
 | `manifest.webmanifest` | App name, colors and icons used when installing |
 | `sw.js` | Service worker: offline support |
 | `icons/` | App icons (Android, iPhone, favicon) |
+| `_headers` | Cloudflare Pages headers (service worker never cached, manifest type) |
 
-## Hosting
+## Hosting (Cloudflare Pages)
 
-Served with GitHub Pages from the `main` branch root. The install button only works over HTTPS, so always share the GitHub Pages link (or a custom domain), never the raw file.
+Connect this repository in Cloudflare Pages with:
+
+- Framework preset: **None**
+- Build command: *(empty)*
+- Build output directory: **/**
+
+The install button only works over HTTPS, so always share the `*.pages.dev` link (or a custom domain), never the raw file.
 
 ## Updating
 
