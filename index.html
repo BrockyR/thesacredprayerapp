@@ -157,6 +157,13 @@ nav.bar button[aria-current="page"]{color:var(--lapis)}
 .copybox code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:.85rem}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:.9rem;z-index:40}
 
+/* illustrations: always drawn on a lapis night panel, in both themes */
+.art{border-radius:20px;overflow:hidden;background:radial-gradient(120% 100% at 50% 100%,#2A4BA8 0%,#172C6B 55%,#0F1E4D 100%)}
+.art svg{display:block;width:100%;height:auto}
+.hero-art{margin:-22px -20px -4px}
+.hero-art svg{display:block;width:100%;height:auto}
+.mailcard + .note{margin-top:0}
+
 /* support button + page */
 .fab{position:fixed;z-index:15;right:max(16px,calc(50% - 280px + 16px));bottom:calc(78px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;border:0;background:var(--lapis);color:var(--surface);display:grid;place-items:center;box-shadow:0 6px 18px rgba(23,44,107,.35)}
 .fab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -192,6 +199,14 @@ nav.bar button[aria-current="page"]{color:var(--lapis)}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6DC93"/><stop offset="1" stop-color="#C48E2C"/></linearGradient>
+    <radialGradient id="gSun"><stop offset="0" stop-color="#FFE7A3" stop-opacity=".95"/><stop offset=".45" stop-color="#F0C060" stop-opacity=".35"/><stop offset="1" stop-color="#F0C060" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gFlame" cx=".5" cy=".7" r=".6"><stop offset="0" stop-color="#FFFBE8"/><stop offset=".5" stop-color="#FFD36B"/><stop offset="1" stop-color="#E8902A"/></radialGradient>
+    <radialGradient id="gGlow"><stop offset="0" stop-color="#FFD36B" stop-opacity=".5"/><stop offset="1" stop-color="#FFD36B" stop-opacity="0"/></radialGradient>
+  </defs>
+</svg>
 
 <div class="app">
   <header class="top">
@@ -571,6 +586,7 @@ function home(){
   const n = nextDay(), all = done.size===7;
   return `
   <div class="hero">
+    <div class="hero-art">${ART.temple()}</div>
     <div class="eyebrow">${all?"Seven days complete":`Day ${n+1} of 7 · ${DAYS[n].t}`}</div>
     <h1>${all?"You finished the seven days":"The Lost Prayer of Solomon"}</h1>
     <p>${all?"Keep praying daily. The more consistently you pray, the more you will notice God's hand in the details.":"A few minutes a day, for seven days, with faith. Today's lamp is waiting for you."}</p>
@@ -609,7 +625,7 @@ function lost(){
   return `
   <div class="page-title"><span class="eyebrow">Pillar I</span><h1>The Lost Prayer of Solomon</h1>
   <p class="intro">Pray once a day for seven days. Seven is the number of completion: seven days of creation, seven trumpets, seven times around Jericho. Read it slowly, aloud or in silence.</p></div>
-  <section class="block">${lampsHTML()}
+  <section class="block"><div class="art">${ART.menorah(done)}</div>
   <div class="list">${DAYS.map((d,i)=>`
     <button class="row" data-open-day="${i}"><span class="idx">${i+1}</span>
       <div><strong>${d.t}</strong><span>${esc(d.ref)}</span></div>
@@ -623,6 +639,7 @@ function manuscript(){
   return `
   <div class="page-title"><span class="eyebrow">Pillar II</span><h1>The Manuscript of Solomon</h1>
   <p class="intro">Solomon's teachings on wisdom, work, generosity and trust in God, with commentary and one practice for each day.</p></div>
+  <section class="block"><div class="art">${ART.scroll()}</div></section>
   <section class="block"><div class="list">${MANUSCRIPT.map((m,i)=>`
     <button class="row" data-ms="${i}"><span class="idx">${["I","II","III","IV","V","VI","VII"][i]}</span>
       <div><strong>${esc(m.t)}</strong><span>${esc(m.s)}</span></div><span class="chev">›</span></button>`).join("")}</div></section>`;
@@ -635,6 +652,7 @@ function prayers(){
   <p class="intro">Prayers for the needs of everyday life. Choose the area of your life you want to bring before God.</p></div>
   <section class="block">
     <div class="tabs" role="group" aria-label="Categories">${CATS.map(x=>`<button data-cat="${x.id}" aria-pressed="${x.id===cat}">${x.name} · 7</button>`).join("")}</div>
+    <div class="art">${CAT_ART[c.id]()}</div>
     <p class="intro">${c.intro}</p>
     ${c.note?`<div class="note">${c.note}</div>`:""}
     <div class="list">${c.items.map((p,i)=>`
@@ -647,6 +665,7 @@ function prayers(){
 function bonus(){
   return `
   <div class="page-title"><span class="eyebrow">Your gifts</span><h1>Three sacred gifts</h1></div>
+  <section class="block"><div class="art">${ART.harvest()}</div></section>
   <section class="block">
     <div class="block-head"><h2>The Song of God</h2></div>
     <div class="player" id="player">
@@ -674,6 +693,155 @@ function bonus(){
     <div class="note">The printed edition is sent only to participants whose copy was reserved at purchase. If yours was reserved, our team will contact you by email to confirm your shipping address.</div>
   </section>`;
 }
+
+/* ---------- ILLUSTRATIONS (inline SVG, drawn on the lapis night panel) ---------- */
+const ART = (() => {
+  const W = 400, H = 150;
+  const rnd = seed => () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const svg = (body, label) => `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}" preserveAspectRatio="xMidYMid meet">${body}</svg>`;
+  const stars = (n, seed, maxY = 80) => { const r = rnd(seed); let s = ""; for(let i=0;i<n;i++) s += `<circle cx="${(r()*W).toFixed(1)}" cy="${(r()*maxY).toFixed(1)}" r="${(0.6+r()*1.1).toFixed(2)}" fill="#F3E3B5" opacity="${(0.3+r()*0.6).toFixed(2)}"/>`; return s; };
+  const rays = (cx, cy, n = 14, len = 240, op = .1) => { let s = ""; for(let i=0;i<n;i++){ const a = Math.PI + (i+.5)*Math.PI/n; s += `<line x1="${cx}" y1="${cy}" x2="${(cx+len*Math.cos(a)).toFixed(1)}" y2="${(cy+len*Math.sin(a)).toFixed(1)}" stroke="#F3D58A" stroke-width="7" opacity="${op}"/>`; } return s; };
+  const hex = (cx, cy, r, color, w = 1.4) => { const tri = rot => [0,1,2].map(k=>{const a=(rot+k*120)*Math.PI/180;return `${(cx+r*Math.cos(a)).toFixed(1)},${(cy+r*Math.sin(a)).toFixed(1)}`}).join(" "); return `<polygon points="${tri(-90)}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linejoin="round"/><polygon points="${tri(90)}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linejoin="round"/>`; };
+  const hills = (back = "#13245C", front = "#0E1B45") => `<path d="M0 124 Q100 98 200 118 T400 110 V150 H0Z" fill="${back}"/><path d="M0 140 Q120 124 200 137 T400 133 V150 H0Z" fill="${front}"/>`;
+  const glow = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#gGlow)"/>`;
+  const quad = (p0, p1, p2, t) => [(1-t)**2*p0[0]+2*(1-t)*t*p1[0]+t*t*p2[0], (1-t)**2*p0[1]+2*(1-t)*t*p1[1]+t*t*p2[1]];
+  const quadAngle = (p0, p1, p2, t) => { const dx = 2*(1-t)*(p1[0]-p0[0])+2*t*(p2[0]-p1[0]), dy = 2*(1-t)*(p1[1]-p0[1])+2*t*(p2[1]-p1[1]); return Math.atan2(dy,dx)*180/Math.PI; };
+
+  return {
+    temple: () => svg(
+      stars(22, 7, 70) + rays(200, 116, 16, 260, .09) +
+      `<circle cx="200" cy="116" r="70" fill="url(#gSun)"/>` +
+      hills() +
+      `<rect x="136" y="128" width="128" height="6" rx="1" fill="url(#gGold)"/>
+       <rect x="146" y="122" width="108" height="6" rx="1" fill="url(#gGold)" opacity=".85"/>
+       <rect x="156" y="76" width="88" height="46" fill="#1E3780" stroke="url(#gGold)" stroke-width="1.5"/>
+       <rect x="166" y="62" width="68" height="14" fill="#1E3780" stroke="url(#gGold)" stroke-width="1.5"/>
+       <path d="M166 62 L200 50 L234 62Z" fill="url(#gGold)"/>
+       <path d="M191 122 V105 a9 9 0 0 1 18 0 V122Z" fill="#FFE3A0"/>${glow(200,110,22)}
+       <rect x="171" y="86" width="7" height="12" rx="3.5" fill="#FFE3A0" opacity=".75"/>
+       <rect x="222" y="86" width="7" height="12" rx="3.5" fill="#FFE3A0" opacity=".75"/>
+       <rect x="161" y="88" width="6" height="34" fill="url(#gGold)"/><rect x="233" y="88" width="6" height="34" fill="url(#gGold)"/>
+       <circle cx="164" cy="86" r="5" fill="#C9473F" stroke="url(#gGold)"/><circle cx="236" cy="86" r="5" fill="#C9473F" stroke="url(#gGold)"/>` +
+      `<path d="M0 140 Q120 124 200 137 T400 133 V150 H0Z" style="fill:var(--lapis-deep)"/>`,
+      "Solomon's temple at sunrise"),
+
+    menorah: lit => {
+      const xs = [-78,-52,-26,0,26,52,78].map(d => 200 + d);
+      let arms = "";
+      [26,52,78].forEach(d => arms += `<path d="M${200-d} 52 A${d} ${d} 0 0 0 ${200+d} 52" fill="none" stroke="url(#gGold)" stroke-width="4" stroke-linecap="round"/>`);
+      const flames = xs.map((x,i) => lit.has(i)
+        ? glow(x,36,20) + `<path d="M${x} 22 C${x+7} 31 ${x+6} 40 ${x} 43 C${x-6} 40 ${x-7} 31 ${x} 22Z" fill="url(#gFlame)"/>`
+        : `<line x1="${x}" y1="40" x2="${x}" y2="45" stroke="#C9B48A" stroke-width="1.5" opacity=".7"/>`).join("");
+      return svg(
+        stars(26, 3, 110) + `<ellipse cx="200" cy="148" rx="150" ry="16" fill="#0E1B45"/>` + arms +
+        `<line x1="200" y1="52" x2="200" y2="137" stroke="url(#gGold)" stroke-width="5" stroke-linecap="round"/>
+         <path d="M176 146 L224 146 L211 135 L189 135Z" fill="url(#gGold)"/>` +
+        xs.map(x => `<rect x="${x-6}" y="45" width="12" height="7" rx="2" fill="url(#gGold)"/>`).join("") + flames,
+        `Seven-branched lampstand, ${lit.size} of 7 lamps lit`);
+    },
+
+    scroll: () => {
+      const r = rnd(11); let lines = "";
+      [[124,174],[186,236],[248,276]].forEach(([a,b]) => { for(let y=50;y<=112;y+=8){ const w = (b-a)*(0.55+r()*0.45); lines += `<rect x="${(b-w).toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="2.4" rx="1.2" fill="#6B4E22" opacity=".55"/>`; } });
+      return svg(
+        stars(18, 5, 60) + glow(200, 80, 120) +
+        `<rect x="110" y="38" width="180" height="84" fill="#EEDFB9"/>
+         <rect x="110" y="38" width="180" height="5" fill="#D9C594"/><rect x="110" y="117" width="180" height="5" fill="#D9C594"/>` + lines +
+        `<rect x="97" y="30" width="15" height="100" rx="7.5" fill="#8A5A2B"/><rect x="288" y="30" width="15" height="100" rx="7.5" fill="#8A5A2B"/>
+         <rect x="101" y="30" width="3" height="100" fill="#B07A3E"/><rect x="292" y="30" width="3" height="100" fill="#B07A3E"/>
+         <circle cx="104.5" cy="27" r="5.5" fill="url(#gGold)"/><circle cx="104.5" cy="133" r="5.5" fill="url(#gGold)"/>
+         <circle cx="295.5" cy="27" r="5.5" fill="url(#gGold)"/><circle cx="295.5" cy="133" r="5.5" fill="url(#gGold)"/>
+         <rect x="322" y="116" width="20" height="16" rx="3" fill="#0E1B45" stroke="url(#gGold)" stroke-width="1.5"/>
+         <path d="M330 118 Q345 74 372 34 Q360 78 334 118Z" fill="#F6F1E3" opacity=".95"/>
+         <line x1="331" y1="122" x2="368" y2="40" stroke="#C9B48A" stroke-width="1.2"/>
+         <rect x="40" y="108" width="12" height="26" rx="2" fill="#F6F1E3"/>${glow(46,98,22)}
+         <path d="M46 92 C50 98 50 103 46 105 C42 103 42 98 46 92Z" fill="url(#gFlame)"/>
+         <rect x="0" y="134" width="400" height="16" fill="#0E1B45"/>`,
+        "An unrolled scroll with a quill and a candle");
+    },
+
+    olive: () => {
+      const p0=[70,132], p1=[200,104], p2=[336,36]; let leaves = "", olives = "";
+      const leaf = (x, y, ang, len, fill) => `<path d="M0 0 Q${len/2} -6.5 ${len} 0 Q${len/2} 6.5 0 0Z" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${ang.toFixed(1)})" fill="${fill}"/><path d="M1 0 L${len-2} 0" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${ang.toFixed(1)})" stroke="#7E9466" stroke-width=".7"/>`;
+      for(let i=0;i<11;i++){ const t = .12 + i*.075, [x,y] = quad(p0,p1,p2,t), a = quadAngle(p0,p1,p2,t), side = i%2 ? 1 : -1;
+        leaves += leaf(x, y, a + side*42, 26 - i*.6, i%3 ? "#C3D3A2" : "#A9BE8F");
+        if(i%4===1) olives += `<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${(x+2).toFixed(1)}" y2="${(y+9).toFixed(1)}" stroke="#8A6A3A" stroke-width="1.2"/><ellipse cx="${(x+3).toFixed(1)}" cy="${(y+15).toFixed(1)}" rx="5" ry="6.5" fill="#6F8A3E"/><circle cx="${(x+1.5).toFixed(1)}" cy="${(y+12.5).toFixed(1)}" r="1.5" fill="#E7EDC9"/>`; }
+      const [ex, ey] = p2;
+      leaves += leaf(ex, ey, quadAngle(p0,p1,p2,1), 22, "#C3D3A2");
+      return svg(stars(20, 9, 90) + glow(300, 40, 70) + `<circle cx="300" cy="40" r="16" fill="#FFE7A3" opacity=".9"/>` +
+        `<path d="M${p0} Q${p1} ${p2}" fill="none" stroke="#B08A50" stroke-width="3.2" stroke-linecap="round"/>` + olives + leaves,
+        "An olive branch in the morning light");
+    },
+
+    wheat: () => {
+      let s = "";
+      [-28,-14,0,14,28].forEach((deg,k) => {
+        const a = (deg-90)*Math.PI/180, len = 104 - Math.abs(deg)*.6, bx = 200, by = 146;
+        const tx = bx + len*Math.cos(a), ty = by + len*Math.sin(a);
+        s += `<line x1="${bx}" y1="${by}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" stroke="url(#gGold)" stroke-width="2.2"/>`;
+        for(let j=0;j<6;j++){ const d = len - 4 - j*7, gx = bx + d*Math.cos(a), gy = by + d*Math.sin(a), rot = deg;
+          s += `<ellipse cx="${(gx-4).toFixed(1)}" cy="${gy.toFixed(1)}" rx="3.4" ry="7" transform="rotate(${rot-28} ${(gx-4).toFixed(1)} ${gy.toFixed(1)})" fill="url(#gGold)"/>`
+             + `<ellipse cx="${(gx+4).toFixed(1)}" cy="${gy.toFixed(1)}" rx="3.4" ry="7" transform="rotate(${rot+28} ${(gx+4).toFixed(1)} ${gy.toFixed(1)})" fill="url(#gGold)"/>`; }
+        s += `<line x1="${tx.toFixed(1)}" y1="${ty.toFixed(1)}" x2="${(tx+14*Math.cos(a)).toFixed(1)}" y2="${(ty+14*Math.sin(a)).toFixed(1)}" stroke="#F3D58A" stroke-width="1"/>`;
+      });
+      return svg(stars(18, 21, 60) + rays(200, 150, 12, 220, .07) + hills() + s + `<rect x="190" y="118" width="20" height="7" rx="2" fill="#8A5A2B"/>`,
+        "A sheaf of golden wheat");
+    },
+
+    home: () => svg(
+      stars(24, 13, 90) +
+      `<path d="M96 22 a16 16 0 1 0 14 26 a13 13 0 1 1 -14 -26Z" fill="#F3E3B5"/>` + hills() +
+      `<circle cx="300" cy="104" r="22" fill="#20503F"/><circle cx="286" cy="112" r="14" fill="#1B4636"/><rect x="297" y="118" width="6" height="20" fill="#5A3B1E"/>
+       <rect x="160" y="80" width="80" height="52" fill="#1E3780" stroke="url(#gGold)" stroke-width="1.5"/>
+       <path d="M148 82 L200 46 L252 82Z" fill="url(#gGold)"/>
+       <rect x="218" y="54" width="10" height="18" fill="#8A5A2B"/>
+       ${glow(181,100,26)}<rect x="172" y="92" width="18" height="16" fill="#FFE3A0"/><line x1="181" y1="92" x2="181" y2="108" stroke="#1E3780" stroke-width="1.5"/><line x1="172" y1="100" x2="190" y2="100" stroke="#1E3780" stroke-width="1.5"/>
+       <rect x="206" y="102" width="18" height="30" rx="2" fill="#0E1B45" stroke="url(#gGold)" stroke-width="1.2"/>
+       <path d="M215 134 Q232 142 262 150" fill="none" stroke="#F3D58A" stroke-width="3" opacity=".35"/>`,
+      "A home with a lit window under the moon"),
+
+    dove: () => svg(
+      stars(24, 17, 150) + glow(200, 78, 90) +
+      `<g transform="translate(196 84) scale(2.3)">
+         <path d="M-22 6 L-37 -1 L-35 11Z" fill="#E9E2CF"/>
+         <path d="M-22 6 Q-6 -6 14 -2 Q20 -10 28 -8 Q24 -4 26 0 Q14 12 -6 12 Q-16 12 -22 6Z" fill="#F6F1E3"/>
+         <path d="M-8 0 Q-2 -26 22 -34 Q14 -16 10 -2Z" fill="#FFFFFF"/>
+         <path d="M-4 0 Q2 -18 16 -26" fill="none" stroke="#D9D2BE" stroke-width=".8"/>
+         <circle cx="20" cy="-5" r="1" fill="#172C6B"/>
+         <path d="M27 -6 L33 -4 L27 -3Z" fill="#E8B04A"/>
+         <path d="M32 -4 Q38 0 42 8" fill="none" stroke="#8A6A3A" stroke-width="1"/>
+         <ellipse cx="38" cy="0" rx="4.5" ry="1.6" transform="rotate(40 38 0)" fill="#B9C99A"/>
+         <ellipse cx="42" cy="5" rx="4.5" ry="1.6" transform="rotate(70 42 5)" fill="#A3B887"/>
+       </g>`,
+      "A dove carrying an olive branch"),
+
+    harvest: () => svg(
+      stars(16, 23, 60) + glow(200, 100, 130) +
+      `<rect x="0" y="126" width="400" height="24" fill="#0E1B45"/><rect x="0" y="124" width="400" height="3" fill="url(#gGold)" opacity=".6"/>
+       <path d="M96 126 Q76 100 90 78 L90 62 L104 62 L104 78 Q118 100 98 126Z" fill="url(#gGold)"/>
+       <path d="M90 70 Q76 70 80 88" fill="none" stroke="url(#gGold)" stroke-width="3"/><path d="M104 70 Q118 70 114 88" fill="none" stroke="url(#gGold)" stroke-width="3"/>
+       <ellipse cx="97" cy="62" rx="10" ry="3" fill="#C48E2C"/>
+       <ellipse cx="160" cy="112" rx="42" ry="16" fill="#D9A45A"/><ellipse cx="160" cy="106" rx="38" ry="10" fill="#E8BD75"/>
+       <path d="M136 104 q6 -6 12 0 M154 102 q6 -6 12 0 M172 104 q6 -6 12 0" fill="none" stroke="#B57E35" stroke-width="2"/>
+       <circle cx="232" cy="102" r="23" fill="#B83A3A"/><circle cx="224" cy="94" r="6" fill="#D66A5E" opacity=".6"/>
+       <path d="M226 80 L229 74 L232 79 L235 74 L238 80Z" fill="#8E2A2A"/>
+       <path d="M268 126 C258 120 258 104 268 98 C278 104 278 120 268 126Z" fill="#5B2C4F"/><path d="M290 126 C281 121 281 107 290 102 C299 107 299 121 290 126Z" fill="#6A3560"/>
+       <line x1="268" y1="98" x2="268" y2="93" stroke="#5A3B1E" stroke-width="2"/>
+       ${[[320,94],[330,94],[340,94],[325,103],[335,103],[330,112],[345,103]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5.5" fill="#6E4A8E"/><circle cx="${x-1.5}" cy="${y-1.5}" r="1.3" fill="#B9A3D1"/>`).join("")}
+       <path d="M332 88 Q336 78 344 76" fill="none" stroke="#5A3B1E" stroke-width="2"/><ellipse cx="346" cy="80" rx="7" ry="3.5" transform="rotate(-20 346 80)" fill="#A3B887"/>`,
+      "Bread, pomegranate, figs and grapes of the Promised Land"),
+
+    letter: () => svg(
+      stars(22, 29, 150) + rays(200, 140, 14, 220, .07) + glow(200, 90, 90) +
+      `<rect x="140" y="48" width="120" height="80" rx="6" fill="#EEDFB9"/>
+       <path d="M140 124 L188 88 M260 124 L212 88" stroke="#D9C594" stroke-width="2"/>
+       <path d="M142 52 L200 96 L258 52" fill="#E3D2A5" stroke="#C9A060" stroke-width="1.5" stroke-linejoin="round"/>
+       <circle cx="200" cy="96" r="15" fill="#9E2B2B"/><circle cx="200" cy="96" r="15" fill="none" stroke="#7E1F1F" stroke-width="2"/>` +
+      hex(200, 96, 8.5, "#F3D58A", 1.3),
+      "A sealed letter"),
+  };
+})();
+const CAT_ART = { strength: ART.olive, work: ART.wheat, family: ART.home, peace: ART.dove };
 
 const VIEWS = {home,lost,manuscript,prayers,bonus};
 function render(){
@@ -981,6 +1149,7 @@ function openSupport(){
   const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Sacred Prayer support")}`;
   const site = location.origin.replace(/^https?:\/\//, "");
   const html = `<div class="guide">
+    <div class="art">${ART.letter()}</div>
     <span class="eyebrow">Support</span>
     <h1>How can we help?</h1>
     <p class="intro">Write to us by email and our team will reply as soon as possible.</p>
